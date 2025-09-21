@@ -17,7 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Learnova - Unlock Your Learning Potential",
+  title: {
+    default: "Learnova - Smart Student Engagement & Attendance Platform",
+    template: "%s | Learnova",
+  },
   description:
     "Join thousands of learners on Learnova and discover courses that will transform your career and expand your knowledge.",
   generator: "v0.app",
