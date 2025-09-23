@@ -42,7 +42,7 @@ export default function UniversalProfile() {
     }
   }, []);
 
-  const { user,loading } = useAuth();
+  const { user, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const fileInputRef = useRef(null);
@@ -435,34 +435,33 @@ export default function UniversalProfile() {
     { id: "settings", label: "Settings", icon: Edit3 },
   ];
 
-if (loading) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 flex items-center justify-center">
-      <Navbar />
-      <div className="text-center text-white pt-20">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-400">Checking authentication...</p>
-      </div>
-    </div>
-  );
-}
-if (!user) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 flex items-center justify-center">
-      <Navbar />
-      <div className="text-center text-white pt-20">
-        <div className="w-16 h-16 bg-gradient-to-r from-accent to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <User className="w-8 h-8" />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 flex items-center justify-center">
+        <Navbar />
+        <div className="text-center text-white pt-20">
+          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Checking authentication...</p>
         </div>
-        <h2 className="text-2xl font-bold mb-2">Please Log In</h2>
-        <p className="text-gray-400">
-          You need to be logged in to view your profile.
-        </p>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 flex items-center justify-center">
+        <Navbar />
+        <div className="text-center text-white pt-20">
+          <div className="w-16 h-16 bg-gradient-to-r from-accent to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Please Log In</h2>
+          <p className="text-gray-400">
+            You need to be logged in to view your profile.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950">
@@ -473,13 +472,13 @@ if (!user) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.15),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(34,197,94,0.1),transparent_50%)]" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative max-w-[88rem] mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-8">
         {/* Profile Header */}
-        <div className="bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 mb-8 relative overflow-hidden">
+        <div className="bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/10 p-4 lg:p-8 mb-6 md:mb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-lg opacity-0 group-hover:opacity-60 transition-all duration-300" />
           <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%)] bg-[length:60px_60px]" />
 
-          <div className="relative flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+          <div className="relative flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-5">
             {/* Profile Image */}
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-lg opacity-0 group-hover:opacity-60 transition-all duration-300" />
@@ -488,9 +487,9 @@ if (!user) {
                 <Image
                   src={getUserPhoto() || "/placeholder.svg"}
                   alt="Profile"
-                  width={300}
-                  height={300}
-                  className="relative w-32 h-32 rounded-full border-4 border-white/20 object-cover shadow-2xl group-hover:scale-105 transition-all duration-300"
+                  width={120}
+                  height={120}
+                  className="relative w-20 h-20 md:w-28 md:h-28 rounded-full border-4 border-white/20 object-cover shadow-2xl group-hover:scale-105 transition-all duration-300"
                   onError={(e) => {
                     e.target.style.display = "none";
                     e.target.nextElementSibling.style.display = "flex";
@@ -499,13 +498,13 @@ if (!user) {
               ) : null}
 
               <div
-                className={`relative w-32 h-32 rounded-full bg-gradient-to-br ${
+                className={`relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br ${
                   roleConfig.color
                 } flex items-center justify-center border-4 border-white/20 shadow-2xl group-hover:scale-105 transition-all duration-300 ${
                   getUserPhoto() ? "hidden" : "flex"
                 }`}
               >
-                <span className="text-3xl font-bold text-white">
+                <span className="text-2xl md:text-3xl font-bold text-white">
                   {getUserInitials(getUserDisplayName())}
                 </span>
               </div>
@@ -539,13 +538,13 @@ if (!user) {
                       name="displayName"
                       value={formData.displayName}
                       onChange={handleInputChange}
-                      className="text-3xl font-bold bg-transparent border-b-2 border-white/30 focus:border-blue-400 outline-none text-white mb-2"
+                      className="text-xl md:text-3xl font-bold bg-transparent border-b-2 border-white/30 focus:border-blue-400 outline-none text-white mb-2"
                       placeholder="Your Name"
                     />
                   ) : (
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center">
+                    <h1 className="text-xl md:text-3xl font-bold text-white mb-2 flex items-center">
                       {getUserDisplayName()}
-                      <Sparkles className="ml-3 h-6 w-6 text-yellow-400 animate-pulse" />
+                      <Sparkles className="ml-2 md:ml-3 h-5 md:h-6 w-5 md:w-6 text-yellow-400 animate-pulse" />
                     </h1>
                   )}
 
@@ -613,7 +612,7 @@ if (!user) {
               </div>
 
               {/* Contact Info */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10 mb-6 md:mb-2">
                 {[
                   {
                     icon: Mail,
@@ -656,7 +655,7 @@ if (!user) {
                           name={item.name}
                           value={item.value}
                           onChange={handleInputChange}
-                          className="bg-transparent border-b border-white/20 focus:border-blue-400 outline-none text-sm py-1 w-full"
+                          className="bg-transparent border-b border-white/20 focus:border-blue-400 outline-none text-sm py-2 w-full min-h-[2.25rem]"
                           placeholder={item.placeholder}
                         />
                       ) : (
@@ -673,11 +672,11 @@ if (!user) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           {roleConfig.stats.map((stat, index) => (
             <div
               key={stat.label}
-              className="bg-black/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-6 hover:bg-black/30 transition-all duration-300 group relative overflow-hidden"
+              className="bg-black/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 md:p-6 hover:bg-black/30 transition-all duration-300 group relative overflow-hidden"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -703,12 +702,12 @@ if (!user) {
         <div className="bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/10 overflow-hidden">
           {/* Tab Navigation */}
           <div className="border-b border-white/10">
-            <nav className="flex space-x-8 px-8 py-4 overflow-x-auto">
+            <nav className="flex space-x-4 md:space-x-8 px-2 md:px-8 py-2 md:py-4 overflow-x-auto">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-3 px-4 border-b-2 transition-all duration-300 whitespace-nowrap ${
+                  className={`flex items-center space-x-2 py-2 md:py-3 px-2 md:px-4 border-b-2 transition-all duration-300 whitespace-nowrap ${
                     activeTab === tab.id
                       ? "border-blue-400 text-blue-400"
                       : "border-transparent text-white/60 hover:text-white hover:border-white/20"
@@ -722,7 +721,7 @@ if (!user) {
           </div>
 
           {/* Tab Content */}
-          <div className="p-8">
+          <div className="p-4 md:p-8">
             {/* Overview Tab */}
             {activeTab === "overview" && (
               <div className="space-y-8">

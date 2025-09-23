@@ -184,7 +184,7 @@ export function Navbar() {
             </Link>
 
             {/* Enhanced Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1">
               {navigationItems.map((item, index) => (
                 <Link
                   key={item.href}
@@ -354,7 +354,7 @@ export function Navbar() {
             </div>
 
             {/* Enhanced Mobile menu button with User Logo */}
-            <div className="md:hidden flex items-center space-x-3">
+            <div className="lg:hidden flex items-center space-x-3">
               {isAuthenticated && (
                 <div className="relative">
                   {getUserPhoto() ? (
@@ -404,14 +404,14 @@ export function Navbar() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-49 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-49 lg:hidden"
             onClick={() => setIsMenuOpen(false)}
             style={{ animation: "fadeIn 0.3s ease-out" }}
           />
 
           {/* Right Side Panel */}
           <div
-            className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-br from-black/95 via-gray-900/95 to-black/95 backdrop-blur-2xl border-l border-white/20 z-52 md:hidden shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-br from-black/95 via-gray-900/95 to-black/95 backdrop-blur-2xl border-l border-white/20 z-52 lg:hidden shadow-2xl flex flex-col"
             style={{ animation: "slideInRight 0.3s ease-out" }}
           >
             {/* Header */}
