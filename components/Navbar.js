@@ -36,6 +36,8 @@ export function Navbar() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const scrollProgressValue = Number.isFinite(scrollProgress) ? scrollProgress : 0;
 
+
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       const progress = Math.min(window.scrollY / 100, 1);
@@ -64,6 +66,20 @@ export function Navbar() {
     };
   }, [handleClickOutside]);
 
+  //Fixed Add ESC Key Support
+  useEffect(() => {
+  const handleEscape = (event) => {
+    if (event.key === "Escape") {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  window.addEventListener("keydown", handleEscape);
+  return () => window.removeEventListener("keydown", handleEscape);
+}, []);
+
+
+
   // FIXED: Body scroll management with class-based approach
   useEffect(() => {
     if (isMenuOpen) {
@@ -78,11 +94,12 @@ export function Navbar() {
     };
   }, [isMenuOpen]);
 
+ 
   const handleLogout = async () => {
-    await signOut();
-    setIsDropdownOpen(false);
-    setIsMenuOpen(false);
-  };
+  setIsDropdownOpen(false);
+  setIsMenuOpen(false);
+  await signOut();
+};
 
   // Get user initials for avatar fallback
   const getUserInitials = (name) => {
@@ -206,34 +223,32 @@ export function Navbar() {
               </div>
             </Link>
 
-            {/* Enhanced Desktop Navigation - FIXED: Changed breakpoint to sm:flex */}
-            <div className="hidden sm:flex items-center space-x-1">
-             {navigationItems.map((item, index) => {
+            {/* Enhanced Desktop Navigation - FIXED: Removed inline animation styles */}
+            <div className="hidden lg:flex items-center space-x-1">
+              {navigationItems.map((item, index) => {
                 const isActive = pathname === item.href;
                 return (
-                <Link
-                key={item.href}
-                href={item.href}
-                className={`relative px-4 py-2 font-medium group overflow-hidden rounded-lg transition-all duration-300 animate-fadeIn-${index}
-                ${
-                  isActive
-                  ? "text-white bg-gradient-to-r from-accent/30 to-blue-500/30"
-                  : "text-white/80 hover:text-white"
-                }`}
-                >
-                <span className="relative z-10">{item.label}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg" />
-                <div
-                className={`absolute bottom-0 h-0.5 bg-gradient-to-r from-accent to-blue-500 transition-all duration-300 ${
-                  isActive
-                  ? "left-0 w-full"
-                  : "left-1/2 w-0 group-hover:left-0 group-hover:w-full"
-                  }`}
-                  />
-                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg animate-pulse" />
-               </Link>
-               );
-               })}
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`relative px-4 py-2 font-medium group overflow-hidden rounded-lg transition-all duration-300
+                ${isActive
+                        ? "text-white bg-gradient-to-r from-accent/30 to-blue-500/30"
+                        : "text-white/80 hover:text-white"
+                      } `}
+                  >
+                    <span className="relative z-10">{item.label}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg" />
+                    <div
+                      className={`absolute bottom-0 h-0.5 bg-gradient-to-r from-accent to-blue-500 transition-all duration-300 ${isActive
+                          ? "left-0 w-full"
+                          : "left-1/2 w-0 group-hover:left-0 group-hover:w-full"
+                        } `}
+                    />
+                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg animate-pulse" />
+                  </Link>
+                );
+              })}
               {/* Enhanced Auth Section */}
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2 md:space-x-4 ml-2 md:ml-6">
@@ -258,9 +273,13 @@ export function Navbar() {
 
                   {/* Enhanced User Dropdown */}
                   <div className="relative" ref={dropdownRef}>
+
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="flex items-center space-x-3 p-2 rounded-xl text-white hover:text-accent transition-all duration-300 group hover:bg-white/5"
+                      aria-haspopup="true"
+                      aria-expanded={isDropdownOpen}
+                      aria-label="User menu"
+                      className="flex items-center space-x-3 p-2 rounded-xl text-white hover:text-accent transition-all duration-300 group hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent"
                     >
                       <div className="relative">
                         {/* FIXED: Better image fallback structure */}
@@ -271,19 +290,19 @@ export function Navbar() {
                               alt="Profile"
                               width={40}
                               height={40}
-                              className="w-10 h-10 rounded-full border-2 border-accent/50 group-hover:border-accent transition-all duration-300 object-cover group-hover:scale-110 shadow-lg"
+                              className="w-10 h-10 rounded-full border-2 border-accent/50 object-cover"
                               onError={handleImageError}
                             />
                           )}
-                          <div
-                            className={`fallback-avatar absolute inset-0 w-10 h-10 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 group-hover:border-accent transition-all duration-300 shadow-lg group-hover:scale-110 ${
-                              getUserPhoto() ? "hidden" : "flex"
-                            }`}
-                          >
-                            <span className="text-sm font-bold text-white">
-                              {getUserInitials(getUserDisplayName())}
+                          {/*Fixed dropdown avatar class*/}
+
+                          {!getUserPhoto() && (
+                            <div className="absolute inset-0 w-10 h-10 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center">
+                              <span className="text-sm font-bold text-white">
+                                {getUserInitials(getUserDisplayName())}
                             </span>
                           </div>
+                          )}
                         </div>
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-black animate-pulse" />
                       </div>
@@ -294,9 +313,8 @@ export function Navbar() {
                         <p className="text-xs text-white/60">{getUserRole()}</p>
                       </div>
                       <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-300 ${
-                          isDropdownOpen ? "rotate-180" : ""
-                        }`}
+                        className={`h-4 w-4 transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""
+                          } `}
                       />
                     </button>
 
@@ -319,9 +337,8 @@ export function Navbar() {
                                 />
                               )}
                               <div
-                                className={`fallback-avatar absolute inset-0 w-12 h-12 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-lg ${
-                                  getUserPhoto() ? "hidden" : "flex"
-                                }`}
+                                className={`fallback-avatar absolute inset-0 w-12 h-12 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-lg ${getUserPhoto() ? "hidden" : "flex"
+                                  } `}
                               >
                                 <span className="text-sm font-bold text-white">
                                   {getUserInitials(getUserDisplayName())}
@@ -409,9 +426,8 @@ export function Navbar() {
                       />
                     )}
                     <div
-                      className={`fallback-avatar absolute inset-0 w-9 h-9 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-md ${
-                        getUserPhoto() ? "hidden" : "flex"
-                      }`}
+                      className={`fallback-avatar absolute inset-0 w-9 h-9 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-md ${getUserPhoto() ? "hidden" : "flex"
+                        } `}
                     >
                       <span className="text-xs font-bold text-white">
                         {getUserInitials(getUserDisplayName())}
@@ -491,9 +507,8 @@ export function Navbar() {
                       />
                     )}
                     <div
-                      className={`fallback-avatar absolute inset-0 w-14 h-14 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-lg ${
-                        getUserPhoto() ? "hidden" : "flex"
-                      }`}
+                      className={`fallback-avatar absolute inset-0 w-14 h-14 rounded-full bg-gradient-to-br from-accent via-blue-500 to-purple-500 flex items-center justify-center border-2 border-accent/50 shadow-lg ${getUserPhoto() ? "hidden" : "flex"
+                        } `}
                     >
                       <span className="text-lg font-bold text-white">
                         {getUserInitials(getUserDisplayName())}
@@ -612,80 +627,82 @@ export function Navbar() {
       )}
 
       <style jsx>{`
-        .overflow-hidden {
-          overflow: hidden !important;
-        }
+   .overflow-hidden {
+  overflow: hidden !important;
+}
+  
+ @keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
 
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%) skewX(-12deg);
-          }
-          100% {
-            transform: translateX(200%) skewX(-12deg);
-          }
-        }
-        .animate-shimmer {
-          animation: shimmer 3s infinite;
-        }
-
-        @keyframes fadeIn {
+@keyframes fadeIn {
           from {
-            opacity: 0;
-          }
+    opacity: 0;
+  }
           to {
-            opacity: 1;
-          }
-        }
+    opacity: 1;
+  }
+}
         .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
+  animation: fadeIn 0.2s ease-out;
+}
 
-        @keyframes slideInRight {
+@keyframes slideInRight {
           from {
-            transform: translateX(100%);
-          }
+    transform: translateX(100%);
+  }
           to {
-            transform: translateX(0);
-          }
-        }
+    transform: translateX(0);
+  }
+}
         .animate-slideInRight {
-          animation: slideInRight 0.2s ease-out;
-        }
+  animation: slideInRight 0.2s ease-out;
+}
 
-        @keyframes slideInFromTop {
+@keyframes slideInFromTop {
           from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
+    opacity: 0;
+    transform: translateY(-8px);
+  }
           to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
         .animate-slideInFromTop {
-          animation: slideInFromTop 0.2s ease-out;
-        }
+  animation: slideInFromTop 0.2s ease-out;
+}
 
         /* Animation delay classes */
-        .animate-fadeIn-0 {
-          animation: fadeIn 0.2s ease-out 0ms both;
-        }
-        .animate-fadeIn-1 {
-          animation: fadeIn 0.2s ease-out 100ms both;
-        }
-        .animate-fadeIn-2 {
-          animation: fadeIn 0.2s ease-out 200ms both;
-        }
-        .animate-fadeIn-delay-0 {
-          animation: fadeIn 0.2s ease-out 0ms both;
-        }
-        .animate-fadeIn-delay-1 {
-          animation: fadeIn 0.2s ease-out 50ms both;
-        }
-        .animate-fadeIn-delay-2 {
-          animation: fadeIn 0.2s ease-out 100ms both;
-        }
-      `}</style>
+.animate-fadeIn-0 {
+  animation: fadeIn 0.2s ease-out 0ms both;
+}
+
+.animate-fadeIn-1 {
+  animation: fadeIn 0.2s ease-out 100ms both;
+}
+
+.animate-fadeIn-2 {
+  animation: fadeIn 0.2s ease-out 200ms both;
+}
+
+.animate-fadeIn-delay-0 {
+  animation: fadeIn 0.2s ease-out 0ms both;
+}
+
+.animate-fadeIn-delay-1 {
+  animation: fadeIn 0.2s ease-out 50ms both;
+}
+
+.animate-fadeIn-delay-2 {
+  animation: fadeIn 0.2s ease-out 100ms both;
+}
+`}</style>
     </>
   );
 }
