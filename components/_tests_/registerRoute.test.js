@@ -44,14 +44,19 @@ describe("POST /api/register - Security & Validation Tests", () => {
 
   const createMockFile = (mimeType, size, magicBytes = []) => {
     const buffer = new Uint8Array(magicBytes.concat(new Array(Math.max(0, 12 - magicBytes.length)).fill(0))).buffer;
-    const mockFileObj = {
-      type: mimeType,
-      size: size,
-      arrayBuffer: jest.fn().mockResolvedValue(buffer),
-      slice: jest.fn().mockReturnValue({
+    const BaseClass = typeof File !== "undefined" ? File : class {};
+    const mockFileObj = Object.create(BaseClass.prototype);
+    Object.defineProperty(mockFileObj, "type", { value: mimeType, writable: true, enumerable: true, configurable: true });
+    Object.defineProperty(mockFileObj, "size", { value: size, writable: true, enumerable: true, configurable: true });
+    Object.defineProperty(mockFileObj, "arrayBuffer", { value: jest.fn().mockResolvedValue(buffer), writable: true, enumerable: true, configurable: true });
+    Object.defineProperty(mockFileObj, "slice", {
+      value: jest.fn().mockReturnValue({
         arrayBuffer: jest.fn().mockResolvedValue(buffer),
       }),
-    };
+      writable: true,
+      enumerable: true,
+      configurable: true
+    });
     return mockFileObj;
   };
 
@@ -110,10 +115,7 @@ describe("POST /api/register - Security & Validation Tests", () => {
   });
 
   test("rejects request if file size exceeds MAX_FILE_SIZE (5MB)", async () => {
-    const oversizedFile = {
-      ...mockFile,
-      size: 6 * 1024 * 1024, // 6MB
-    };
+    const oversizedFile = createMockFile("image/jpeg", 6 * 1024 * 1024, [0xff, 0xd8, 0xff]);
 
     const req = createMockRequest({
       name: "John Doe",
@@ -135,10 +137,7 @@ describe("POST /api/register - Security & Validation Tests", () => {
     mockFindOne.mockResolvedValue(null);
     mockInsertOne.mockResolvedValue({ insertedId: "mock-id" });
 
-    const limitFile = {
-      ...mockFile,
-      size: 5 * 1024 * 1024, // 5MB
-    };
+    const limitFile = createMockFile("image/jpeg", 5 * 1024 * 1024, [0xff, 0xd8, 0xff]);
 
     const req = createMockRequest({
       name: "John Doe",
@@ -211,7 +210,7 @@ describe("POST /api/register - Security & Validation Tests", () => {
     const body = await response.json();
 
     expect(response.status).toBe(400);
-    expect(body.error).toContain("must be a valid image file");
+    expect(body.error).toContain("Photo must be a valid file");
     expect(mockInsertOne).not.toHaveBeenCalled();
   });
 

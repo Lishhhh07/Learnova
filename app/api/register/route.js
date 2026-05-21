@@ -70,8 +70,8 @@ export async function POST(req) {
       return jsonError("Name, rollNo, email, and photo are required", 400);
     }
 
-    if (typeof file.arrayBuffer !== "function" || typeof file.slice !== "function") {
-      return jsonError("Invalid file upload. Photo must be a valid image file.", 400);
+    if (!(file instanceof File)) {
+      return jsonError("Photo must be a valid file", 400);
     }
 
     if (!EMAIL_PATTERN.test(email)) {
