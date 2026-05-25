@@ -16,6 +16,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import BackToTop from "@/components/BackToTop";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import ScrollProgress from "@/components/ui/ScrollProgress";
+import NextTopLoader from "nextjs-toploader";
 
 
 const geistSans = Geist({
