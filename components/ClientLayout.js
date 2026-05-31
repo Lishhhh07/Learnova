@@ -280,7 +280,6 @@ export default function ClientLayout({ children }) {
   },
   { merge: true }
 );
-console.log("[streak-sync] Firestore updated successfully.");
         }
 
       } catch (error) {

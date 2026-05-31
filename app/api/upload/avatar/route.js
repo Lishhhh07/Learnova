@@ -3,7 +3,10 @@ import { del } from "@vercel/blob";
 import { requireAuth } from "@/lib/rbac";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { connectDb } from "@/lib/mongodb";
-import { extractImageFileFromFormData, uploadAvatarToBlob } from "@/lib/images/imagesService";
+import {
+  extractImageFileFromFormData,
+  uploadAvatarToBlob,
+} from "@/lib/images/imagesService";
 
 export const dynamic = "force-dynamic";
 
@@ -11,16 +14,15 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const POST = async (request) => {
   try {
-    
-    
     const decodedToken = await requireAuth(request);
-    
-    
-    const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
-    
+
+    const ip =
+      request.headers.get("x-forwarded-for") || "127.0.0.1";
+
     const rateLimitResult = await checkRateLimit(
       `avatar_upload_${ip}_${decodedToken.uid}`
     );
+
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { error: "Too many attempts. Please try again later." },
@@ -28,7 +30,6 @@ export const POST = async (request) => {
       );
     }
 
-   
     const formData = await request.formData();
     const file = extractImageFileFromFormData(formData);
 
@@ -39,7 +40,7 @@ export const POST = async (request) => {
       );
     }
 
-    
+    // File metadata received; do not log PII or file details in production
 
     if (file.size <= 0) {
       return NextResponse.json(
@@ -56,7 +57,6 @@ export const POST = async (request) => {
     }
 
     // Upload to Vercel Blob instead of storing base64 in MongoDB
-    
     const { blobUrl } = await uploadAvatarToBlob({
       file,
       uid: decodedToken.uid,
@@ -79,7 +79,11 @@ export const POST = async (request) => {
 
       // Delete old blob after successful DB write
       const oldAvatar = existingUser?.avatar;
-      if (oldAvatar && oldAvatar.startsWith("https://")) {
+
+      if (
+        oldAvatar &&
+        oldAvatar.startsWith("https://")
+      ) {
         await del(oldAvatar).catch(() => {});
       }
     } catch (error) {
@@ -88,13 +92,13 @@ export const POST = async (request) => {
       throw error;
     }
 
-  
-    
+    // Avatar saved successfully to blob storage
+
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         url: blobUrl,
-        message: "Avatar uploaded successfully" 
+        message: "Avatar uploaded successfully",
       },
       { status: 200 }
     );
@@ -104,16 +108,22 @@ export const POST = async (request) => {
       stack: error?.stack,
       name: error?.name,
     });
-    
+
     // Return specific error messages
-    if (error.message && error.message.includes("Unauthorized")) {
+    if (
+      error.message &&
+      error.message.includes("Unauthorized")
+    ) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
-    
-    if (error.statusCode && error.statusCode < 500) {
+
+    if (
+      error.statusCode &&
+      error.statusCode < 500
+    ) {
       return NextResponse.json(
         { error: error.message },
         { status: error.statusCode }
@@ -121,7 +131,11 @@ export const POST = async (request) => {
     }
 
     return NextResponse.json(
-      { error: error.message || "Failed to upload avatar" },
+      {
+        error:
+          error.message ||
+          "Failed to upload avatar",
+      },
       { status: 500 }
     );
   }
