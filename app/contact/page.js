@@ -49,6 +49,7 @@ export default function Contact() {
   const [cooldown, setCooldown] = useState(false);
   const [cooldownTimer, setCooldownTimer] = useState(0);
   const cooldownIntervalRef = useRef(null);
+  const [charCount, setCharCount] = useState(0);
 
   useEffect(() => {
     const COOLDOWN_MS = 60 * 1000;
@@ -82,18 +83,23 @@ export default function Contact() {
   }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
 
-    setErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
-  };
+  // Track character count for the message field
+  if (name === "message") {
+    setCharCount(value.length);
+  }
+
+  setErrors((prev) => ({
+    ...prev,
+    [name]: "",
+  }));
+};
 
   const validateForm = () => {
     const newErrors = {};
@@ -174,7 +180,7 @@ export default function Contact() {
       company: "",
       message: "",
     });
-
+    setCharCount(0); 
     setErrors({});
   } catch (error) {
     console.error("[Contact Form] EmailJS error:", error);
@@ -378,19 +384,35 @@ export default function Contact() {
                         Message *
                       </label>
                       <textarea
-                        id="contact-message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        rows="5"
-                        placeholder="Tell us about your needs and how we can help..."
-                        className="w-full p-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent/50 transition-colors duration-300 resize-none"
-                      />
-                      {errors.message && (
-                        <p className="text-red-400 text-sm mt-1">
-                          {errors.message}
-                        </p>
-                      )}
+                    id="contact-message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows="5"
+                    placeholder="Tell us about your needs and how we can help..."
+                    className="w-full p-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent/50 transition-colors duration-300 resize-none"
+                  />
+                  {/* Character counter — always visible */}
+                  <div className="flex items-center justify-between mt-1">
+                    {errors.message ? (
+                      <p className="text-red-400 text-sm">{errors.message}</p>
+                    ) : (
+                      <span /> 
+                    )}
+                    <p
+                      className={`text-xs font-medium transition-colors duration-200 ${
+                        charCount === 0
+                          ? "text-muted-foreground"
+                          : charCount < 10
+                          ? "text-red-400"
+                          : "text-green-400"
+                      }`}
+                    >
+                      {charCount < 10
+                        ? `${charCount} / 10 minimum characters`
+                        : `${charCount} characters ✓`}
+                    </p>
+                  </div>
                     </div>
 
                     {/* Submit Status */}
