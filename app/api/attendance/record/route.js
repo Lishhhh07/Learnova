@@ -21,8 +21,8 @@ export const POST = withErrorHandler(async (request) => {
   }
 
   const body = await parseJSON(request, 1024);
-  const { userId, studentName, email, confidenceScore, date } = body;
-  const normalizedDate = (date || getLocalDateKey()).toString();
+  const { userId, studentName, email, confidenceScore } = body;
+  const normalizedDate = getLocalDateKey();
 
   // 2. Ensure they are only submitting attendance for their own UID!
   if (decodedToken.uid !== userId) {
@@ -50,7 +50,10 @@ export const POST = withErrorHandler(async (request) => {
   initFirebaseAdmin();
   const db = getFirestore();
   const userProfile = await getUserProfile(decodedToken.uid);
-  const instituteId = userProfile?.instituteId || null;
+  if (!userProfile) {
+    return jsonError("User profile not found", 404);
+  }
+  const instituteId = userProfile.instituteId || null;
 
   // Use authoritative, verified data from Firebase JWT token (decodedToken) to completely prevent
   // client-supplied parameter spoofing and impersonation attacks.
