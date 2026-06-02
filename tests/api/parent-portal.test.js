@@ -147,9 +147,10 @@ describe("Parent Portal Feature Tests", () => {
           }),
           doc: vi.fn((docId) => {
             const docVal = colData[docId];
-            const docRef = {
+            return {
               id: docId,
               get: vi.fn(async () => ({
+                id: docId,
                 exists: docVal !== undefined,
                 data: () => docVal,
               })),
@@ -162,7 +163,6 @@ describe("Parent Portal Feature Tests", () => {
                 store[colName] = colData;
               }),
             };
-            return docRef;
           }),
           where: vi.fn((field, op, val) => {
             let filtered = Object.entries(colData).filter(([_, item]) => {
@@ -227,6 +227,14 @@ describe("Parent Portal Feature Tests", () => {
             return { id: newId };
           }),
         };
+      }),
+      getAll: vi.fn(async (...refs) => {
+        const results = [];
+        for (const ref of refs) {
+          const snapshot = await ref.get();
+          results.push(snapshot);
+        }
+        return results;
       }),
     });
 

@@ -87,7 +87,10 @@ describe("attendance heatmap API route", () => {
   });
 
   test("allows admin to query any user", async () => {
-    requireRole.mockResolvedValue({ payload: { uid: "admin-1", role: "admin" }, profile: { role: "admin" } });
+    requireRole.mockResolvedValue({
+      payload: { uid: "admin-1", role: "admin" },
+      profile: { role: "admin" },
+    });
     getUserProfile.mockImplementation((uid) => {
       if (uid === "admin-1") return Promise.resolve({ instituteId: "inst-1" });
       if (uid === "student-42") return Promise.resolve({ instituteId: "inst-1" });
@@ -102,9 +105,12 @@ describe("attendance heatmap API route", () => {
   });
 
   test("allows teacher to query any user", async () => {
-    requireRole.mockResolvedValue({ payload: { uid: "teacher-1", role: "teacher" }, profile: { role: "teacher", subjects: ["Math"] } });
+    requireRole.mockResolvedValue({
+      payload: { uid: "teacher-1", role: "teacher" },
+      profile: { role: "teacher", subjects: ["Math"] },
+    });
     getUserProfile.mockImplementation((uid) => {
-      if (uid === "teacher-1") return Promise.resolve({ instituteId: "inst-1", subjects: ["Math"] });
+      if (uid === "teacher-1") return Promise.resolve({ instituteId: "inst-1" });
       if (uid === "student-42") return Promise.resolve({ instituteId: "inst-1", role: "student", subjects: ["Math"] });
       return Promise.resolve(null);
     });
