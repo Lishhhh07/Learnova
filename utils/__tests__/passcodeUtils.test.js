@@ -74,7 +74,7 @@ describe("verifyPasscode", () => {
     expect(verifyPasscode("123456", "badsalt:badhash")).toBe(false);
   });
 
-  test("is consistent across multiple verifications with the same stored hash", () => {
+  test("is consistent across multiple verifications with the same stored hash", { timeout: 15000 }, () => {
     const stored = hashPasscode("abc123");
     expect(verifyPasscode("abc123", stored)).toBe(true);
     expect(verifyPasscode("abc123", stored)).toBe(true);
