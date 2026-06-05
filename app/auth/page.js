@@ -71,6 +71,15 @@ function AuthPageContent() {
   };
 
   const handleSubmit = async (formData) => { // <-- Accept formData directly here
+    // CRITICAL: Validate role selection before proceeding with authentication
+    if (!selectedRole) {
+      setErrors({ 
+        role: "Please select your role before proceeding with authentication",
+        submit: "Role selection is required. Please go back and select a role." 
+      });
+      return;
+    }
+
     const { email, password, fullName, instituteName, inviteCode } = formData; // Extract fields for the API call
     const { isValid, errors: validationErrors } = validateForm(formData, isLogin);
 
