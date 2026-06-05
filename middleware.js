@@ -247,6 +247,16 @@ export async function middleware(request) {
   // Requests authenticated via Authorization: Bearer <token> are not CSRF-vulnerable.
   // Defer CSRF validation until after token extraction/verification below.
 
+  if (pathname.startsWith("/api/") && isUnsafeMethod) {
+    const contentLength = Number(request.headers.get("content-length"));
+    if (!Number.isNaN(contentLength) && contentLength > 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Payload too large (limit 1MB)" },
+        { status: 413 }
+      );
+    }
+  }
+
   const requestHeaders = new Headers(request.headers);
 
   let authToken = null;
