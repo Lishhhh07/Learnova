@@ -1,3 +1,4 @@
+"use client";
 import { toast } from "react-hot-toast";
 import React, {
   useState,
@@ -1370,3 +1371,4 @@ const TeacherDashboard = () => {
   );
 };
 export default React.memo(TeacherDashboard);
+

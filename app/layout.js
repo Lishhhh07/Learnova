@@ -4,7 +4,7 @@ import SyllabusAnalytics from '../components/SyllabusAnalytics';
 import LearningStreakDashboard from '../components/LearningStreakDashboard';
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { FirestoreProvider } from "@/contexts/FirestoreContext";
-x
+
 // ─── Next.js core & React ────────────────────────────────────────────────────
 
 import React from "react";

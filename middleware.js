@@ -37,7 +37,6 @@ const CLOCK_TOLERANCE_SECONDS = 60;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const RATE_LIMIT_MAX = 5;
 
-let redisClient;
 
 function getRedis() {
   if (!redisClient) {
@@ -437,7 +436,6 @@ export async function middleware(request) {
     }
   }
 
-  if (pathname.startsWith("/api/") && isUnsafeMethod) {
   if (isTokenValid && pathname.startsWith("/api/")) {
     const sessionId =
       request.cookies.get("sessionId")?.value ||
@@ -625,8 +623,7 @@ export async function middleware(request) {
   return response;
 }
 
-// Exported for unit testing (in-memory fallback behavior)
-export { isAuthRoute, rateLimit, cleanupRateLimitMap, devRateLimitMap, resetForTest };
+
 
 // Test helper to control cleanup timer
 function resetForTest(now) {
@@ -638,3 +635,5 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|workbox-.*).*)",
   ],
 };
+
+

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -1249,3 +1250,4 @@ const InstituteDashboard = () => {
 };
 
 export default InstituteDashboard;
+

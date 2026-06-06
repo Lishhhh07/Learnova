@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { exportRiskToCSV } from "../utils/exportToCSV";
 
@@ -37,3 +38,4 @@ export default function AIAttendanceDashboard({ riskData, tenantId }) {
     </div>
   );
 }
+

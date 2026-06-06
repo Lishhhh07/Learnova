@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -1246,3 +1247,4 @@ const AttendanceValidation = ({ onValidationSuccess }) => {
 };
 
 export default AttendanceValidation;
+
