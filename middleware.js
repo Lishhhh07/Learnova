@@ -67,6 +67,67 @@ const PUBLIC_API_PATHS = [
   "/api/health",
 ];
 const PUBLIC_PATHS = ["/activity", "/auth", "/verify"];
+function isAuthRoute(pathname) {
+  return AUTH_RATE_LIMITED_PATHS.some((path) => pathname.startsWith(path));
+}
+
+async function rateLimit(ip, pathname, request) {
+  const cookies = typeof request.cookies?.get === "function" ? request.cookies : { get: () => undefined };
+  const sessionFingerprint = cookies.get("__Secure-next-auth.session-token")?.value
+    || cookies.get("next-auth.session-token")?.value
+    || cookies.get("authToken")?.value
+    || "";
+  const key = `ratelimit:auth:${ip}_${pathname}_${sessionFingerprint.slice(0, 16)}`;
+  const limit = RATE_LIMIT_MAX;
+  const windowMs = RATE_LIMIT_WINDOW_MS;
+
+  const hasRedis =
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (hasRedis) {
+    try {
+      const redis = getRedis();
+      const now = Date.now();
+      const windowStart = now - windowMs;
+
+      const multi = redis.multi();
+      multi.zremrangebyscore(key, 0, windowStart);
+      multi.zadd(key, { score: now, member: `${now}-${Math.random()}` });
+      multi.zcard(key);
+      multi.expire(key, Math.ceil(windowMs / 1000));
+      const [, , count] = await multi.exec();
+
+      const current = Number(count);
+      if (current > limit) {
+        const oldest = await redis.zrange(key, 0, 0, { withScores: true });
+        const resetTime = oldest.length >= 2 ? Number(oldest[1]) + windowMs : now + windowMs;
+        const retryAfter = Math.ceil((resetTime - now) / 1000);
+        return { allowed: false, remaining: 0, retryAfter };
+      }
+
+      return { allowed: true, remaining: limit - current };
+    } catch (err) {
+      console.error("[rate-limit] Upstash Redis error — denying request:", err);
+      return { allowed: false, remaining: 0, retryAfter: Math.ceil(windowMs / 1000) };
+    }
+  }
+
+  const entry = devRateLimitMap.get(key);
+  const now = Date.now();
+
+  if (!entry || now > entry.resetTime) {
+    devRateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: limit - 1 };
+  }
+
+  if (entry.count >= limit) {
+    const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
+    return { allowed: false, remaining: 0, retryAfter };
+  }
+
+  entry.count += 1;
+  return { allowed: true, remaining: limit - entry.count };
+}
 // ─── CSP ──────────────────────────────────────────────────────────────────────
 
 function buildPageCsp() {
@@ -285,6 +346,22 @@ async function verifyIdToken(token) {
   }
 }
 
+let lastCleanupTime = 0;
+function cleanupRateLimitMap() {
+  try {
+    const now = Date.now();
+    if (now - lastCleanupTime < 5 * 60 * 1000) return;
+    lastCleanupTime = now;
+    if (devRateLimitMap.size === 0) return;
+    for (const [key, entry] of devRateLimitMap.entries()) {
+      if (now > entry.resetTime) {
+        devRateLimitMap.delete(key);
+      }
+    }
+  } catch {
+    // Cleanup failure must never crash the middleware
+  }
+}
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 export async function middleware(request) {
@@ -561,5 +638,6 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|workbox-.*).*)",
   ],
 };
+
 
 

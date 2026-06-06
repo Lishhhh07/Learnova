@@ -120,6 +120,14 @@ export const useAuth = () => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const isMountedRef = useRef(true);
+const isMounted = useCallback(() => isMountedRef.current, []);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const refreshManagerRef = useRef(null);
   const unsubscribeSnapshotRef = useRef(null);

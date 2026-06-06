@@ -5,6 +5,7 @@ import { ValidationError } from "@/lib/errors";
 import { initializeFirebase } from "@/lib/firebase-admin";
 import admin from "firebase-admin";
 import { passcodeSchema, withValidation } from "@/lib/validations";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -30,9 +31,9 @@ export const POST = withErrorHandler(
     const { passcode } = validatedData;
 
     const { getUserProfile } = await import("@/lib/firebase-admin");
-...
-  const profile = await getUserProfile(decodedToken.uid);
-  if (!profile) {
+    const adminDb = admin.firestore();
+    const profile = await getUserProfile(decodedToken.uid);
+    if (!profile) {
     return NextResponse.json(
       { valid: false, error: "User profile not found." },
       { status: 404 }
@@ -91,4 +92,5 @@ export const POST = withErrorHandler(
     },
     { status: 401 }
   );
-});
+})
+);

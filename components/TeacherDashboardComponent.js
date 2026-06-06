@@ -83,12 +83,6 @@ import { db } from "@/lib/firebaseConfig";
 
 import { collection, getDocs, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 
-import AttendanceRiskDashboard from "@/components/dashboard/AttendanceRiskDashboard";
-import { AttendancePasscodeModal } from "./dashboard/AttendancePasscodeModal";
-import { ExceptionRequestsList } from "./dashboard/ExceptionRequestsList";
-import { useAttendance } from "@/hooks/useAttendance";
-import { useCurriculum } from "@/hooks/useCurriculum";
-import { apiFetch } from "@/lib/apiClient";
 
 
 const AttendanceTrendsChart = dynamic(
