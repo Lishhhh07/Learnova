@@ -154,6 +154,7 @@ export const quizDatabase = {
         answer: 2, // She has a cat.
       },
     ], 
+ },
 };
 
 /**
@@ -168,5 +169,6 @@ export const getQuizDataByTitle = (title) => {
   return {
     ...quizDatabase["General Knowledge Quiz"],
     title: title || "General Knowledge Quiz",
-  };
+ };
 };
+

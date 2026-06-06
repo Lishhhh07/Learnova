@@ -49,7 +49,7 @@ export default function FaceRecognizer({ authUser }) {
   const [livenessState, setLivenessState] = useState("IDLE");
   const [blinkPrompt, setBlinkPrompt] = useState("");
   const [facingMode, setFacingMode] = useState("user");
-  const [isOffline, setIsOffline] = useState(typeof window !== "undefined" ? !navigator.onLine : false);
+ 
 
   // ── HARD CLEANUP FUNCTION ──────────
   const stopAllMedia = useCallback(() => {
@@ -376,15 +376,6 @@ export default function FaceRecognizer({ authUser }) {
     );
   };
 
-  const processVideo = async () => {
-    if (!isMounted.current || !videoRef.current || videoRef.current.paused) return;
-
-    let faceapi = faceapiRef.current;
-    if (!faceapi) {
-      faceapi = await import("face-api.js");
-      faceapiRef.current = faceapi;
-    }
-    if (!isMounted.current || abortControllerRef.current?.signal.aborted) return;
   const processVideo = async (signal) => {
     if (
       !videoRef.current ||
