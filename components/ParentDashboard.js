@@ -423,6 +423,7 @@ const ParentDashboard = () => {
   };
 
   return (
+    <>
 
       <Navbar />
 
@@ -1243,7 +1244,7 @@ const ParentDashboard = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
