@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import SmartNoticeBoard from "@/components/NoticeBoard";
+import NoticeCard from "@/components/NoticeCard";
+import NoticeFilters from "@/components/NoticeFilters";
+import NoticeSearch from "@/components/NoticeSearch";
+import NoticeSkeleton from "@/components/NoticeSkeleton";
 
 const Notice = () => {
   const { user, loading: authLoading } = useAuth();
@@ -38,7 +41,7 @@ const Notice = () => {
   // ✅ Authenticated and verified
   return (
     <div className="min-h-screen bg-slate-900">
-      <SmartNoticeBoard />
+     <NoticeSkeleton />
     </div>
   );
 };
